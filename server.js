@@ -1,32 +1,31 @@
-//File originally retrieved on 29/12/16 from https://scotch.io/tutorials/authenticate-a-node-js-api-with-json-web-tokens
-//Modified for Raider by Alex231
+//Grab packages
+var express = require('express');
+app = express(); //Instance express (?)
+var mongoose = require('mongoose'); //Mongo Connection
+var bodyParser = require('body-parser');
+var morgan = require('morgan');
+var passport = require('passport');
+var jwt = require('jsonwebtoken');
 
-// packages
-var express     = require('express');
-var app         = express();
-var bodyParser  = require('body-parser');
-var morgan      = require('morgan');
-var mongoose    = require('mongoose');
+var config = require('./config/main');
+var User = require('./app/models/user');
+var port = 8080;
 
-var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
-var config = require('./config'); // get our config file
-var User   = require('./app/models/user'); // get our mongoose model
-    
-// configuration 
-var port = process.env.PORT || 8080; // used to create, sign, and verify tokens
-mongoose.connect(config.database); // connect to database
-app.set('superSecret', config.secret); // secret variable
-
-// use body parser so we can get info from POST and/or URL parameters
+//Get POSTS with body-parser
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-// use morgan to log requests to the console
+//log requests.
 app.use(morgan('dev'));
 
-// routes
-require('./app/routes')(app, User, jwt, express);
+//Initialize passport.
+app.use(passport.initialize());
 
-// start the server
+//Connect to db
+mongoose.connect(config.database);
+
+//I probably don't need to pass in app right?
+require('./app/routes')(app);
+
 app.listen(port);
-console.log('Magic happens at http://localhost:' + port);
+console.log('Server running on ' + port);
