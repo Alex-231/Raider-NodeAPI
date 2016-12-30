@@ -1,0 +1,21 @@
+{
+  "name": "Raider-NodeAPI",
+  "description": "Backend Web API for Raider auth and data.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Alex-231/Raider-NodeAPI"
+  },
+  "main": "server.js",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "jsonwebtoken": "^7.2.1",
+    "mongoose": "^4.7.5",
+    "morgan": "^1.7.0",
+    "passport": "^0.3.2",
+    "passport-jwt": "^2.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "*"
+  }
+}
