@@ -13,20 +13,24 @@ module.exports = function(app) {
     var apiRoutes = express.Router();
 
     //Register new user.
-    apiRoutes.post('/register', function(req, res) {
+    apiRoutes.post('/auth/register', function(req, res) {
         if (!req.body.email || !req.body.password) {
             res.json({ success: false, message: 'Please enter an email and password.' });
 
+        } else if (!req.body.username) {
+            res.json({ success: false, message: 'Please enter a Username.' });
         } else {
             var newUser = new User({
+                username: req.body.username,
                 email: req.body.email,
-                password: req.body.password
+                password: req.body.password,
+                created: Date.now()
             });
 
             //Attempt to save the new user.
             newUser.save(function(err) {
                 if (err) {
-                    return res.json({ success: false, message: 'Email address already exists.' });
+                    return res.json({ success: false, message: 'Username or Email Address already exists.' });
                 }
                 res.json({ success: true, message: 'Successfully created new user.' });
             });
@@ -34,7 +38,7 @@ module.exports = function(app) {
     });
 
     //Authenticate the user and get a token (yay!)
-    apiRoutes.post('/authenticate', function(req, res) {
+    apiRoutes.post('/auth/login', function(req, res) {
         User.findOne({
             email: req.body.email
         }, function(err, user) {
@@ -61,8 +65,39 @@ module.exports = function(app) {
         });
     });
 
+    apiRoutes.get('/auth/github',
+        passport.authenticate('github'),
+        function(req, res) {});
+    apiRoutes.get('/auth/github/callback',
+        passport.authenticate('github', { failureRedirect: '/', session: false }),
+        function(req, res) {
+            var token = jwt.sign(req.user, config.secret, {
+                expiresIn: '1440m'
+            });
+            res.json({ success: true, token: 'JWT ' + token });
+        });
+
+    apiRoutes.get('/auth/google',
+        passport.authenticate('google', {
+            scope: [
+                'https://www.googleapis.com/auth/plus.login',
+                'https://www.googleapis.com/auth/plus.profile.emails.read',
+                'email',
+                'profile'
+            ]
+        }));
+    apiRoutes.get('/auth/google/callback',
+        passport.authenticate('google', { failureRedirect: '/', session: false }),
+        function(req, res) {
+            //Create a token and respond.
+            var token = jwt.sign(req.user, config.secret, {
+                expiresIn: '1440m'
+            });
+            res.json({ success: true, token: 'JWT ' + token });
+        });
+
     //Protect dashboard route with jwt,
-    apiRoutes.get('/dashboard', passport.authenticate('jwt', { session: false }), function(req, res) {
+    apiRoutes.get('/protected', passport.authenticate('jwt', { session: false }), function(req, res) {
         res.send('It worked! User id is: ' + req.user._id + '.');
     });
 
@@ -71,7 +106,7 @@ module.exports = function(app) {
 
     //Should probably move this later.
     //Home route
-    app.get('/', function(req, res) {
-        res.send('Homepage route.')
-    })
-}
+    // app.get('/', function(req, res) {
+    //     res.send('Homepage route.')
+    // })
+};

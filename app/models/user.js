@@ -3,39 +3,74 @@ var mongoose = require('mongoose');
 var bcrypt = require('bcrypt-nodejs');
 
 var UserSchema = new mongoose.Schema({
+    oauthID: {
+        type: String,
+        required: false,
+        unique: false
+    },
+    username: {
+        type: String,
+        required: true,
+        unique: true
+    },
     email: {
         type: String,
         lowercase: true,
-        unique: true,
+        unique: false,
         required: true
     },
     password: {
         type: String,
-        required: true
+        required: false
     },
     role: {
         type: String,
-        enum: ['Client', 'Manager', 'Admin'],
-        default: 'Client'
+        enum: ['Player', 'Admin', 'Webmaster'],
+        default: 'Player'
+    },
+    created: {
+        type: Date,
+        required: true
     }
+});
+
+UserSchema.pre('validate', function(next) {
+    //A password or oauth id must be present.
+    if (!this.password && !this.oauthID) {
+        return next(Error('Cant create a user without oauth or a password!'));
+    }
+    //If it's a local account, the email must be unique.
+    if (this.password && User.findOne(this.email)) {
+        return next(Error('Cant create account, email address already registered'));
+    }
+    return next();
 });
 
 //Hash password.
 UserSchema.pre('save', function(next) {
     var user = this;
-    if (this.isModified('password') || this.isNew) {
-        bcrypt.genSalt(10, function(err, salt) {
-            if (err) {
-                return next(err);
-            }
-            bcrypt.hash(user.password, salt, null, function(err, hash) {
+
+    //If there's no profile create date, add one now.
+    if (!this.created) {
+        this.created = Date.now();
+    }
+
+    //If there's a password...
+    if (this.password) {
+        if (this.isModified('password') || this.isNew) {
+            bcrypt.genSalt(10, function(err, salt) {
                 if (err) {
                     return next(err);
                 }
-                user.password = hash;
-                next();
-            })
-        })
+                bcrypt.hash(user.password, salt, null, function(err, hash) {
+                    if (err) {
+                        return next(err);
+                    }
+                    user.password = hash;
+                    next();
+                });
+            });
+        }
     } else {
         return next();
     }

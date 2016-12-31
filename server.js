@@ -9,7 +9,7 @@ var jwt = require('jsonwebtoken');
 
 var config = require('./config/main');
 var User = require('./app/models/user');
-var port = 8080;
+var port = 3000;
 
 //Get POSTS with body-parser
 app.use(bodyParser.urlencoded({ extended: false }));
