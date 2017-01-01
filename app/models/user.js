@@ -1,6 +1,6 @@
-// get an instance of mongoose and mongoose.Schema
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt-nodejs');
+var CharacterSchema = require('./character');
 
 var UserSchema = new mongoose.Schema({
     oauthID: {
@@ -31,6 +31,10 @@ var UserSchema = new mongoose.Schema({
     created: {
         type: Date,
         required: true
+    },
+    characters: {
+        type: [CharacterSchema],
+        required: false
     }
 });
 
