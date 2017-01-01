@@ -40,7 +40,7 @@ module.exports = function(app) {
     //Authenticate the user and get a token (yay!)
     apiRoutes.post('/auth/login', function(req, res) {
         User.findOne({
-            email: req.body.email
+            username: req.body.username
         }, function(err, user) {
             if (err) throw err;
 
