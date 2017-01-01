@@ -65,36 +65,36 @@ module.exports = function(app) {
         });
     });
 
-    apiRoutes.get('/auth/github',
-        passport.authenticate('github'),
-        function(req, res) {});
-    apiRoutes.get('/auth/github/callback',
-        passport.authenticate('github', { failureRedirect: '/', session: false }),
-        function(req, res) {
-            var token = jwt.sign(req.user, config.secret, {
-                expiresIn: '1440m'
-            });
-            res.json({ success: true, token: 'JWT ' + token });
-        });
+    // apiRoutes.get('/auth/github',
+    //     passport.authenticate('github'),
+    //     function(req, res) {});
+    // apiRoutes.get('/auth/github/callback',
+    //     passport.authenticate('github', { failureRedirect: '/', session: false }),
+    //     function(req, res) {
+    //         var token = jwt.sign(req.user, config.secret, {
+    //             expiresIn: '1440m'
+    //         });
+    //         res.json({ success: true, token: 'JWT ' + token });
+    //     });
 
-    apiRoutes.get('/auth/google',
-        passport.authenticate('google', {
-            scope: [
-                'https://www.googleapis.com/auth/plus.login',
-                'https://www.googleapis.com/auth/plus.profile.emails.read',
-                'email',
-                'profile'
-            ]
-        }));
-    apiRoutes.get('/auth/google/callback',
-        passport.authenticate('google', { failureRedirect: '/', session: false }),
-        function(req, res) {
-            //Create a token and respond.
-            var token = jwt.sign(req.user, config.secret, {
-                expiresIn: '1440m'
-            });
-            res.json({ success: true, token: 'JWT ' + token });
-        });
+    // apiRoutes.get('/auth/google',
+    //     passport.authenticate('google', {
+    //         scope: [
+    //             'https://www.googleapis.com/auth/plus.login',
+    //             'https://www.googleapis.com/auth/plus.profile.emails.read',
+    //             'email',
+    //             'profile'
+    //         ]
+    //     }));
+    // apiRoutes.get('/auth/google/callback',
+    //     passport.authenticate('google', { failureRedirect: '/', session: false }),
+    //     function(req, res) {
+    //         //Create a token and respond.
+    //         var token = jwt.sign(req.user, config.secret, {
+    //             expiresIn: '1440m'
+    //         });
+    //         res.json({ success: true, token: 'JWT ' + token });
+    //     });
 
     //Protect dashboard route with jwt,
     apiRoutes.get('/protected', passport.authenticate('jwt', { session: false }), function(req, res) {
