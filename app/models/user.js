@@ -16,7 +16,7 @@ var UserSchema = new mongoose.Schema({
     email: {
         type: String,
         lowercase: true,
-        unique: false,
+        unique: true,
         required: true
     },
     password: {
@@ -39,21 +39,18 @@ UserSchema.pre('validate', function(next) {
     if (!this.password && !this.oauthID) {
         return next(Error('Cant create a user without oauth or a password!'));
     }
-    //If it's a local account, the email must be unique.
-    if (this.password && User.findOne(this.email)) {
-        return next(Error('Cant create account, email address already registered'));
+
+    //If there's no profile create date, add one now.
+    if (!this.created) {
+        this.created = Date.now();
     }
+
     return next();
 });
 
 //Hash password.
 UserSchema.pre('save', function(next) {
     var user = this;
-
-    //If there's no profile create date, add one now.
-    if (!this.created) {
-        this.created = Date.now();
-    }
 
     //If there's a password...
     if (this.password) {
@@ -70,6 +67,8 @@ UserSchema.pre('save', function(next) {
                     next();
                 });
             });
+        } else {
+            return next();
         }
     } else {
         return next();

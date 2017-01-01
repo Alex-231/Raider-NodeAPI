@@ -20,16 +20,16 @@ module.exports = function(app) {
         } else if (!req.body.username) {
             res.json({ success: false, message: 'Please enter a Username.' });
         } else {
-            var newUser = new User({
+            var user = new User({
                 username: req.body.username,
                 email: req.body.email,
-                password: req.body.password,
-                created: Date.now()
+                password: req.body.password
             });
 
             //Attempt to save the new user.
-            newUser.save(function(err) {
+            user.save(function(err) {
                 if (err) {
+                    Console.Log(err);
                     return res.json({ success: false, message: 'Username or Email Address already exists.' });
                 }
                 res.json({ success: true, message: 'Successfully created new user.' });
