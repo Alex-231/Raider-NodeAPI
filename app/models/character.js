@@ -1,11 +1,11 @@
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt-nodejs');
 var EmblemSchema = require('./emblem');
-var ColorSchema = require('./color');
+var ColorSchema = require('./color').ColorSchema;
 
 var CharacterSchema = new mongoose.Schema({
     emblem: {
-        type: EmblemSchema,
+        type: mongoose.model('Emblem').schema,
         required: true
     },
     race: {
@@ -19,15 +19,15 @@ var CharacterSchema = new mongoose.Schema({
         required: true
     },
     armourPrimaryColor: {
-        type: ColorSchema,
+        type: mongoose.model('Color').schema,
         required: true
     },
     armourSecondaryColor: {
-        type: ColorSchema,
+        type: mongoose.model('Color').schema,
         required: true
     },
     armourTertiaryColor: {
-        type: ColorSchema,
+        type: mongoose.model('Color').schema,
         required: true
     },
     shoulderArmour: {

@@ -33,7 +33,7 @@ var UserSchema = new mongoose.Schema({
         required: true
     },
     characters: {
-        type: [CharacterSchema],
+        type: [mongoose.model('Character').schema],
         required: false
     }
 });

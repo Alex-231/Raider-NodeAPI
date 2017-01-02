@@ -4,15 +4,15 @@ var ColorSchema = require('./color');
 
 var EmblemSchema = new mongoose.Schema({
     layer2Color: {
-        type: ColorSchema.Schema,
+        type: mongoose.model('Color').schema,
         required: true,
     },
     layer1Color: {
-        type: ColorSchema,
+        type: mongoose.model('Color').schema,
         required: true,
     },
     layer0Color: {
-        type: ColorSchema,
+        type: mongoose.model('Color').schema,
         required: true,
     },
     layer2: {
