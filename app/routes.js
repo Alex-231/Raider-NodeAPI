@@ -107,10 +107,10 @@ module.exports = function(app) {
     });
 
     apiRoutes.get('/user/characters', passport.authenticate('jwt', { session: false }), function(req, res) {
-        if (!req.characters) {
+        if (!req.user.characters) {
             res.send({ success: false, message: 'No characters found.' });
         }
-        res.send({ success: true, user: req.characters });
+        res.send({ success: true, characters: req.user.characters });
     });
 
     apiRoutes.put('/user/characters', passport.authenticate('jwt', { session: false }), function(req, res) {
@@ -129,7 +129,7 @@ module.exports = function(app) {
         res.send({ success: true, message: 'Successfully added character to the user.' });
     });
 
-    apiRoutes.put('/user/characters/:slot', passport.authenticate('jwt', { session: false }), function(req, res) {
+    apiRoutes.put('/user/characters/:slot(\\d+)', passport.authenticate('jwt', { session: false }), function(req, res) {
 
         if (!req.body.character) {
             res.send({ success: false, message: 'No character was sent.' });
@@ -145,15 +145,15 @@ module.exports = function(app) {
         res.send({ success: true, message: 'Successfully added character to the user.' });
     });
 
-    apiRoutes.get('/user/characters/:slot', passport.authenticate('jwt', { session: false }), function(req, res) {
+    apiRoutes.get('/user/characters/:slot(\\d+)', passport.authenticate('jwt', { session: false }), function(req, res) {
 
-        if (!res.user.characters[req.params.slot]) {
+        if (!req.user.characters[req.params.slot]) {
             res.send({ success: false, message: 'No character found at slot ' + req.params.slot });
         }
         res.send({ success: true, character: req.user.characters[req.params.slot] });
     });
 
-    apiRoutes.delete('/user/characters/:slot', passport.authenticate('jwt', { session: false }), function(req, res) {
+    apiRoutes.delete('/user/characters/:slot(\\d+)', passport.authenticate('jwt', { session: false }), function(req, res) {
 
         req.user.characters.splice(req.params.slot, 1);
         req.user.save(function(err) {
