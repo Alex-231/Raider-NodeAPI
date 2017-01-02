@@ -103,19 +103,42 @@ module.exports = function(app) {
     });
 
     apiRoutes.get('/user', passport.authenticate('jwt', { session: false }), function(req, res) {
-        res.send(req.user);
+        res.send({ success: true, user: req.user });
     });
 
     apiRoutes.put('/user/characters', passport.authenticate('jwt', { session: false }), function(req, res) {
+
+        if (!req.body.character) {
+            res.send({ success: false, message: 'No character was sent.' });
+        }
+
         var characterJson = JSON.parse(req.body.character);
         req.user.characters.push(new Character(characterJson));
         req.user.save(function(err) {
             if (err) {
-                console.log(err);
+                res.send({ success: false, message: err });
             }
         });
-        res.send('It worked! Req User is: ' + req.user);
+        res.send({ success: true, message: 'Successfully added character to the user.' });
     });
+
+    //Deletes the character at provided index.
+    apiRoutes.delete('/user/characters', passport.authenticate('jwt', { session: false }), function(req, res) {
+        if (!req.body.slot) {
+            res.send({ success: false, message: 'No character index slot was recieved.' });
+        }
+
+        req.user.characters.splice(req.body.slot, 1);
+        req.user.save(function(err) {
+            if (err) {
+                res.send({ success: false, message: err });
+            }
+        });
+
+        res.send({ success: true, message: 'Successfully deleted the character at ' + req.body.slot });
+    });
+
+
 
     //Set url for API group routes.
     app.use('/api', apiRoutes);
