@@ -26,7 +26,7 @@ var EmblemSchema = new mongoose.Schema({
     layer0: {
         type: Number,
         required: true,
-    },
+    }
 });
 
 module.exports = mongoose.model('Emblem', EmblemSchema);

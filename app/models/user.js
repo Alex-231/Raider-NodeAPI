@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt-nodejs');
 var CharacterSchema = require('./character');
+var SettingsSchema = require('./settings');
 
 var UserSchema = new mongoose.Schema({
     oauthID: {
@@ -11,7 +12,8 @@ var UserSchema = new mongoose.Schema({
     username: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        maxlength: 16
     },
     email: {
         type: String,
@@ -34,6 +36,10 @@ var UserSchema = new mongoose.Schema({
     },
     characters: {
         type: [mongoose.model('Character').schema],
+        required: false
+    },
+    userSettings: {
+        type: [mongoose.model('Settings').schema],
         required: false
     }
 });
