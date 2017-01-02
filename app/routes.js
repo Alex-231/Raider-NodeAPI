@@ -106,6 +106,13 @@ module.exports = function(app) {
         res.send({ success: true, user: req.user });
     });
 
+    apiRoutes.get('/user/characters', passport.authenticate('jwt', { session: false }), function(req, res) {
+        if (!req.characters) {
+            res.send({ success: false, message: 'No characters found.' });
+        }
+        res.send({ success: true, user: req.characters });
+    });
+
     apiRoutes.put('/user/characters', passport.authenticate('jwt', { session: false }), function(req, res) {
 
         if (!req.body.character) {
@@ -122,20 +129,40 @@ module.exports = function(app) {
         res.send({ success: true, message: 'Successfully added character to the user.' });
     });
 
-    //Deletes the character at provided index.
-    apiRoutes.delete('/user/characters', passport.authenticate('jwt', { session: false }), function(req, res) {
-        if (!req.body.slot) {
-            res.send({ success: false, message: 'No character index slot was recieved.' });
+    apiRoutes.put('/user/characters/:slot', passport.authenticate('jwt', { session: false }), function(req, res) {
+
+        if (!req.body.character) {
+            res.send({ success: false, message: 'No character was sent.' });
         }
 
-        req.user.characters.splice(req.body.slot, 1);
+        var characterJson = JSON.parse(req.body.character);
+        req.user.characters[req.params.slot] = new Character(characterJson);
+        req.user.save(function(err) {
+            if (err) {
+                res.send({ success: false, message: err });
+            }
+        });
+        res.send({ success: true, message: 'Successfully added character to the user.' });
+    });
+
+    apiRoutes.get('/user/characters/:slot', passport.authenticate('jwt', { session: false }), function(req, res) {
+
+        if (!res.user.characters[req.params.slot]) {
+            res.send({ success: false, message: 'No character found at slot ' + req.params.slot });
+        }
+        res.send({ success: true, character: req.user.characters[req.params.slot] });
+    });
+
+    apiRoutes.delete('/user/characters/:slot', passport.authenticate('jwt', { session: false }), function(req, res) {
+
+        req.user.characters.splice(req.params.slot, 1);
         req.user.save(function(err) {
             if (err) {
                 res.send({ success: false, message: err });
             }
         });
 
-        res.send({ success: true, message: 'Successfully deleted the character at ' + req.body.slot });
+        res.send({ success: true, message: 'Successfully deleted the character at ' + req.params.slot });
     });
 
 
