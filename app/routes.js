@@ -2,6 +2,7 @@ var express = require('express');
 var passport = require('passport');
 var jwt = require('jsonwebtoken');
 var User = require('./models/user');
+var Character = require('./models/character');
 var config = require('../config/main');
 
 module.exports = function(app) {
@@ -99,6 +100,21 @@ module.exports = function(app) {
     //Protect dashboard route with jwt,
     apiRoutes.get('/protected', passport.authenticate('jwt', { session: false }), function(req, res) {
         res.send('It worked! User id is: ' + req.user._id + '.');
+    });
+
+    apiRoutes.get('/user', passport.authenticate('jwt', { session: false }), function(req, res) {
+        res.send(req.user);
+    });
+
+    apiRoutes.put('/user/characters', passport.authenticate('jwt', { session: false }), function(req, res) {
+        var characterJson = JSON.parse(req.body.character);
+        req.user.characters.push(new Character(characterJson));
+        req.user.save(function(err) {
+            if (err) {
+                console.log(err);
+            }
+        });
+        res.send('It worked! Req User is: ' + req.user);
     });
 
     //Set url for API group routes.

@@ -8,7 +8,7 @@ var CharacterSchema = new mongoose.Schema({
         type: mongoose.model('Emblem').schema,
         required: true
     },
-    race: {
+    raceString: {
         type: String,
         enum: ['X', 'Y'],
         default: 'X',
@@ -16,7 +16,7 @@ var CharacterSchema = new mongoose.Schema({
     },
     guild: {
         type: String,
-        required: true
+        required: false
     },
     armourPrimaryColor: {
         type: mongoose.model('Color').schema,
@@ -30,19 +30,19 @@ var CharacterSchema = new mongoose.Schema({
         type: mongoose.model('Color').schema,
         required: true
     },
-    shoulderArmour: {
+    shoulderArmourString: {
         type: String,
         enum: ['X', 'Y'],
         default: 'X',
         required: true,
     },
-    helmetArmour: {
+    helmetArmourString: {
         type: String,
         enum: ['X', 'Y'],
         default: 'X',
         required: true,
     },
-    chestArmour: {
+    chestArmourString: {
         type: String,
         enum: ['X', 'Y'],
         default: 'X',

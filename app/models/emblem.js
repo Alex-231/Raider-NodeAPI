@@ -16,7 +16,7 @@ var EmblemSchema = new mongoose.Schema({
         required: true,
     },
     layer2: {
-        type: Number,
+        type: Boolean,
         required: true,
     },
     layer1: {
@@ -24,7 +24,7 @@ var EmblemSchema = new mongoose.Schema({
         required: true,
     },
     layer0: {
-        type: Boolean,
+        type: Number,
         required: true,
     },
 });
