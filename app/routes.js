@@ -13,6 +13,12 @@ module.exports = function(app) {
     //API routes.
     var apiRoutes = express.Router();
 
+
+    //Health route for OpenShift monitoring.
+    app.get("/health", function(req, res) {
+        res.json({ success: true, message: 'success' });
+    });
+
     //Register new user.
     apiRoutes.post('/auth/register', function(req, res) {
         if (!req.body.email || !req.body.password) {
@@ -128,7 +134,7 @@ module.exports = function(app) {
         res.send({ success: true, user: req.user });
     });
 
-    apiRoutes.post('/user/username', passport.authenticate('jwt', { session: false }), function(req, res) {
+    apiRoutes.put('/user/username', passport.authenticate('jwt', { session: false }), function(req, res) {
         if (!req.body.username) {
             res.send({ success: false, message: 'No username recieved' });
         }
@@ -195,10 +201,30 @@ module.exports = function(app) {
         res.send({ success: true, message: 'Successfully added character to the user.' });
     });
 
+    apiRoutes.post('/user/characters/new', passport.authenticate('jwt', { session: false }), function(req, res) {
+
+        if (!req.body.character) {
+            res.send({ success: false, message: 'No character was sent.' });
+        }
+
+        var characterJson = JSON.parse(req.body.character);
+        req.user.characters.push(new Character(characterJson));
+        req.user.save(function(err) {
+            if (err.message) {
+                res.send({ success: false, message: err.message });
+            }
+        });
+        res.send({ success: true, message: 'Successfully added character' });
+    });
+
     apiRoutes.put('/user/characters/:slot(\\d+)', passport.authenticate('jwt', { session: false }), function(req, res) {
 
         if (!req.body.character) {
             res.send({ success: false, message: 'No character was sent.' });
+        }
+
+        if (req.params.slot > (req.user.characters.count - 1)) {
+            res.send({ success: false, message: 'No character was found.' });
         }
 
         var characterJson = JSON.parse(req.body.character);
@@ -208,7 +234,7 @@ module.exports = function(app) {
                 res.send({ success: false, message: err.message });
             }
         });
-        res.send({ success: true, message: 'Successfully added character to the user.' });
+        res.send({ success: true, message: 'Successfully edited character' });
     });
 
     apiRoutes.get('/user/characters/:slot(\\d+)', passport.authenticate('jwt', { session: false }), function(req, res) {
@@ -216,10 +242,19 @@ module.exports = function(app) {
         if (!req.user.characters[req.params.slot]) {
             res.send({ success: false, message: 'No character found at slot ' + req.params.slot });
         }
+
+        if (req.params.slot > (req.user.characters.count - 1)) {
+            res.send({ success: false, message: 'No character was found.' });
+        }
+
         res.send({ success: true, character: req.user.characters[req.params.slot] });
     });
 
     apiRoutes.delete('/user/characters/:slot(\\d+)', passport.authenticate('jwt', { session: false }), function(req, res) {
+
+        if (req.params.slot > (req.user.characters.count - 1)) {
+            res.send({ success: false, message: 'No character was found.' });
+        }
 
         req.user.characters.splice(req.params.slot, 1);
         req.user.save(function(err) {

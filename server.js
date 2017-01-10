@@ -1,6 +1,6 @@
 //Grab packages
 var express = require('express');
-app = express(); //Instance express (?)
+var app = express(); //Instance express (?)
 var mongoose = require('mongoose'); //Mongo Connection
 var bodyParser = require('body-parser');
 var morgan = require('morgan');
@@ -27,5 +27,5 @@ mongoose.connect(config.database);
 //I probably don't need to pass in app right?
 require('./app/routes')(app);
 
-app.listen(port);
-console.log('Server running on ' + port);
+app.listen(port, 'localhost');
+console.log('Server running.');
