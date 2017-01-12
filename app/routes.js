@@ -147,8 +147,8 @@ module.exports = function(app) {
         User.findOne({
             username: req.body.username
         }, function(err, user) {
-            if (err.message) {
-                res.send({ success: false, message: err.message });
+            if (err) {
+                res.send({ success: false, message: err });
             }
 
             if (!user) {
@@ -175,8 +175,8 @@ module.exports = function(app) {
         var settingsJson = JSON.parse(req.body.settings);
         req.user.settings = new Settings({ settingsJson });
         req.user.save(function(err) {
-            if (err.message) {
-                res.send({ success: false, message: err.message });
+            if (err) {
+                res.send({ success: false, message: err });
             } else {
                 res.send({ success: true, message: 'Successfully updated user settings.' });
             }
@@ -199,8 +199,8 @@ module.exports = function(app) {
         var characterJson = JSON.parse(req.body.character);
         req.user.characters.push(new Character(characterJson));
         req.user.save(function(err) {
-            if (err.message) {
-                res.send({ success: false, message: err.message });
+            if (err) {
+                res.send({ success: false, message: err });
             }
         });
         res.send({ success: true, message: 'Successfully added character to the user.' });
