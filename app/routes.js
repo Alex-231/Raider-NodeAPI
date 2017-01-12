@@ -3,6 +3,7 @@ var passport = require('passport');
 var jwt = require('jsonwebtoken');
 var User = require('./models/user');
 var Character = require('./models/character');
+var Settings = require('./models/settings');
 var config = require('../config/main');
 
 module.exports = function(app) {
@@ -103,8 +104,12 @@ module.exports = function(app) {
     //     });
 
     //Protect dashboard route with jwt,
-    apiRoutes.get('/protected', passport.authenticate('jwt', { session: false }), function(req, res) {
+    apiRoutes.get('/protected', passport.authenticate('jwt', { session: false, failureRedirect: '/api/errors/unauthorized' }), function(req, res) {
         res.send('It worked! User id is: ' + req.user._id + '.');
+    });
+
+    apiRoutes.get("/errors/unauthorized", function(req, res) {
+        res.json({ success: false, message: 'unauthorized' });
     });
 
     // apiRoutes.put('/user', passport.authenticate('jwt', { session: false }), function(req, res) {
@@ -130,11 +135,11 @@ module.exports = function(app) {
     //     });
     // });
 
-    apiRoutes.get('/user', passport.authenticate('jwt', { session: false }), function(req, res) {
+    apiRoutes.get('/user', passport.authenticate('jwt', { session: false, failureRedirect: '/api/errors/unauthorized' }), function(req, res) {
         res.send({ success: true, user: req.user });
     });
 
-    apiRoutes.put('/user/username', passport.authenticate('jwt', { session: false }), function(req, res) {
+    apiRoutes.put('/user/username', passport.authenticate('jwt', { session: false, failureRedirect: '/api/errors/unauthorized' }), function(req, res) {
         if (!req.body.username) {
             res.send({ success: false, message: 'No username recieved' });
         }
@@ -162,7 +167,7 @@ module.exports = function(app) {
         res.send({ success: true, characters: req.user.characters });
     });
 
-    apiRoutes.put('/user/settings', passport.authenticate('jwt', { session: false }), function(req, res) {
+    apiRoutes.put('/user/settings', passport.authenticate('jwt', { session: false, failureRedirect: '/api/errors/unauthorized' }), function(req, res) {
 
         if (!req.body.settings) {
             res.send({ success: false, message: 'No settings were sent.' });
@@ -178,14 +183,14 @@ module.exports = function(app) {
         });
     });
 
-    apiRoutes.get('/user/characters', passport.authenticate('jwt', { session: false }), function(req, res) {
+    apiRoutes.get('/user/characters', passport.authenticate('jwt', { session: false, failureRedirect: '/api/errors/unauthorized' }), function(req, res) {
         if (!req.user.characters) {
             res.send({ success: false, message: 'No characters found.' });
         }
         res.send({ success: true, characters: req.user.characters });
     });
 
-    apiRoutes.put('/user/characters', passport.authenticate('jwt', { session: false }), function(req, res) {
+    apiRoutes.put('/user/characters', passport.authenticate('jwt', { session: false, failureRedirect: '/api/errors/unauthorized' }), function(req, res) {
 
         if (!req.body.character) {
             res.send({ success: false, message: 'No character was sent.' });
@@ -201,7 +206,7 @@ module.exports = function(app) {
         res.send({ success: true, message: 'Successfully added character to the user.' });
     });
 
-    apiRoutes.post('/user/characters/new', passport.authenticate('jwt', { session: false }), function(req, res) {
+    apiRoutes.post('/user/characters/new', passport.authenticate('jwt', { session: false, failureRedirect: '/api/errors/unauthorized' }), function(req, res) {
 
         if (!req.body.character) {
             res.send({ success: false, message: 'No character was sent.' });
@@ -210,14 +215,14 @@ module.exports = function(app) {
         var characterJson = JSON.parse(req.body.character);
         req.user.characters.push(new Character(characterJson));
         req.user.save(function(err) {
-            if (err.message) {
-                res.send({ success: false, message: err.message });
+            if (err) {
+                res.send({ success: false, message: err });
             }
         });
         res.send({ success: true, message: 'Successfully added character' });
     });
 
-    apiRoutes.put('/user/characters/:slot(\\d+)', passport.authenticate('jwt', { session: false }), function(req, res) {
+    apiRoutes.put('/user/characters/:slot(\\d+)', passport.authenticate('jwt', { session: false, failureRedirect: '/api/errors/unauthorized' }), function(req, res) {
 
         if (!req.body.character) {
             res.send({ success: false, message: 'No character was sent.' });
@@ -230,14 +235,14 @@ module.exports = function(app) {
         var characterJson = JSON.parse(req.body.character);
         req.user.characters[req.params.slot] = new Character(characterJson);
         req.user.save(function(err) {
-            if (err.message) {
-                res.send({ success: false, message: err.message });
+            if (err) {
+                res.send({ success: false, message: err });
             }
         });
         res.send({ success: true, message: 'Successfully edited character' });
     });
 
-    apiRoutes.get('/user/characters/:slot(\\d+)', passport.authenticate('jwt', { session: false }), function(req, res) {
+    apiRoutes.get('/user/characters/:slot(\\d+)', passport.authenticate('jwt', { session: false, failureRedirect: '/api/errors/unauthorized' }), function(req, res) {
 
         if (!req.user.characters[req.params.slot]) {
             res.send({ success: false, message: 'No character found at slot ' + req.params.slot });
@@ -250,7 +255,7 @@ module.exports = function(app) {
         res.send({ success: true, character: req.user.characters[req.params.slot] });
     });
 
-    apiRoutes.delete('/user/characters/:slot(\\d+)', passport.authenticate('jwt', { session: false }), function(req, res) {
+    apiRoutes.delete('/user/characters/:slot(\\d+)', passport.authenticate('jwt', { session: false, failureRedirect: '/api/errors/unauthorized' }), function(req, res) {
 
         if (req.params.slot > (req.user.characters.count - 1)) {
             res.send({ success: false, message: 'No character was found.' });
@@ -258,8 +263,8 @@ module.exports = function(app) {
 
         req.user.characters.splice(req.params.slot, 1);
         req.user.save(function(err) {
-            if (err.message) {
-                res.send({ success: false, message: err.message });
+            if (err) {
+                res.send({ success: false, message: err });
             }
         });
 
