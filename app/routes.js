@@ -58,9 +58,10 @@ module.exports = function(app) {
                 user.comparePassword(req.body.password, function(err, isMatch) {
                     if (isMatch && !err) {
                         //Create the token!
-                        var token = jwt.sign(user, config.secret, {
-                            expiresIn: '1440m'
-                        });
+                        var token = jwt.sign({ data: user.username },
+                            config.secret, { expiresIn: '1d' }
+                        );
+
                         res.json({ success: true, token: 'JWT ' + token });
                     } else //Password doesn't match
                     {
@@ -94,10 +95,10 @@ module.exports = function(app) {
     //         ]
     //     }));
     // apiRoutes.get('/auth/google/callback',
-    //     passport.authenticate('google', { failureRedirect: '/', session: false }),
+    //     passport.authenticate('google', { failureRedirect: '/api/errors/unauthorized', session: false }),
     //     function(req, res) {
     //         //Create a token and respond.
-    //         var token = jwt.sign(req.user, config.secret, {
+    //         var token = jwt.sign(req.user.username, config.secret, {
     //             expiresIn: '1440m'
     //         });
     //         res.json({ success: true, token: 'JWT ' + token });
