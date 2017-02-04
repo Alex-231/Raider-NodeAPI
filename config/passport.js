@@ -12,7 +12,7 @@ module.exports = function(passport) {
     opts.secretOrKey = config.secret; //That's it, that's it, that's it.
 
     passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
-        User.findOne({ id: jwt_payload.id }, function(err, user) {
+        User.findOne({ username: jwt_payload.data }, function(err, user) {
             if (err) { //If there's an error, return it.
                 return done(err, false);
             }
@@ -33,8 +33,9 @@ module.exports = function(passport) {
             User.findOne({ oauthID: profile.id }, function(err, user) {
                 if (err) {
                     console.log(err); // handle errors!
+                    return done({ success: false, message: err });
                 }
-                if (!err && user !== null) {
+                if (user !== null) {
                     done(null, user);
                 } else {
                     user = new User({
@@ -66,8 +67,9 @@ module.exports = function(passport) {
             User.findOne({ oauthID: profile.id }, function(err, user) {
                 if (err) {
                     console.log(err); // handle errors!
+                    return done({ success: false, message: err });
                 }
-                if (!err && user !== null) {
+                if (user !== null) {
                     done(null, user);
                 } else {
                     user = new User({
