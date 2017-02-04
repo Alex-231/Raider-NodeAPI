@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var bcrypt = require('bcrypt-nodejs');
 var CharacterSchema = require('./character');
 var SettingsSchema = require('./settings');
+var Clan = require('./clan');
 
 var UserSchema = new mongoose.Schema({
     oauthID: {
@@ -34,6 +35,19 @@ var UserSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
+    clan_id: {
+        type: mongoose.Schema.ObjectId,
+        auto: false,
+        required: false
+    },
+    clanInvite_ids: {
+        type: [mongoose.Schema.ObjectId],
+        required: false,
+    },
+    clanRequest_ids: {
+        type: [mongoose.Schema.ObjectId],
+        required: false,
+    },
     characters: {
         type: [mongoose.model('Character').schema],
         required: false
@@ -45,6 +59,33 @@ var UserSchema = new mongoose.Schema({
 });
 
 UserSchema.pre('validate', function(next) {
+
+    //Check that no unlinked clan requests are present.
+    if(this.clanRequest_ids.length > 1)
+    {
+        this.clanRequest_ids.forEach(function(clanRequest_id) {
+
+            Clan.findById(id, function(err, foundClan) {
+                if (foundClan && !(foundClan.requestedUser_ids.indexOf(this._id) > -1)) { //If there's a clan, store it.
+                    this.clanRequest_ids.splice(this.clanRequest_ids.indexOf(clanRequest_id, 1));
+                }
+            });
+
+        }, this);
+    }
+    if(this.clanInvite_ids.length > 1)
+    {
+        this.clanInvite_ids.forEach(function(clanInvite_id) {
+
+            Clan.findById(id, function(err, foundClan) {
+                if (foundClan && !(foundClan.invitedUser_ids.indexOf(this._id) > -1)) { //If there's a clan, store it.
+                    this.clanInvite_ids.splice(this.clanInvite_ids.indexOf(clanInvite_id, 1));
+                }
+            });
+
+        }, this);
+    }
+
     //A password or oauth id must be present.
     if (!this.password && !this.oauthID) {
         return next(Error('Cant create a user without oauth or a password!'));

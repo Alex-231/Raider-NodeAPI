@@ -24,8 +24,8 @@ app.use(passport.initialize());
 //Connect to db
 mongoose.connect(config.database);
 
-//I probably don't need to pass in app right?
-require('./app/routes')(app);
+//Require routes.
+require('./app/routes/main')(app);
 
 app.listen(port, 'localhost');
 console.log('Server running.');
