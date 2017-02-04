@@ -44,9 +44,10 @@ router.post('/login', function(req, res) {
             user.comparePassword(req.body.password, function(err, isMatch) {
                 if (isMatch && !err) {
                     //Create the token!
-                    var token = jwt.sign(user, config.secret, {
-                        expiresIn: '1440m'
-                    });
+                    var token = jwt.sign({data: user.username}, 
+                        config.secret, { expiresIn: '1d'}
+                    );
+
                     res.json({ success: true, token: 'JWT ' + token });
                 } else //Password doesn't match
                 {
@@ -64,9 +65,9 @@ router.post('/login', function(req, res) {
 // router.get('/auth/github/callback',
 //     passport.authenticate('github', { failureRedirect: '/', session: false }),
 //     function(req, res) {
-//         var token = jwt.sign(req.user, config.secret, {
-//             expiresIn: '1440m'
-//         });
+//     var token = jwt.sign({data: req.username}, 
+//         config.secret, { expiresIn: '1d'}
+//     );
 //         res.json({ success: true, token: 'JWT ' + token });
 //     });
 
