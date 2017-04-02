@@ -26,7 +26,7 @@ module.exports = function(app) {
 
     //Set url for API group routes.
     apiRoutes.use('/auth', require('./auth'));
-    apiRoutes.use('/clan', require('./clan'));
+    //apiRoutes.use('/clan', require('./clan'));
     apiRoutes.use('/user', require('./user'));
     //apiRoutes.use('/debug', require('./debug')); //There's probably a variable I can use to enable this.
     app.use('/api', apiRoutes);
