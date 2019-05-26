@@ -1,0 +1,10 @@
+{
+    "plugins": [[
+        "inline-dotenv", {
+            "path": ".env"
+        }]
+    ],
+    "presets" : [
+        "@babel/preset-env"
+    ]
+  }

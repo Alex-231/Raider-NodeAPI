@@ -1,25 +1,53 @@
 {
-  "name": "Raider-NodeAPI",
-  "description": "Backend Web API for Raider auth and data.",
+  "name": "raider-nodeapi",
+  "version": "2.0.0",
+  "description": "Backend Web API for Skirmish.",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run build && node build/index.js",
+    "build": "babel api -d build",
+    "serve": "node dist/index.js",
+    "lint": "npm eslint api"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Alex-231/Raider-NodeAPI"
+    "url": "git+https://github.com/Alex-231/Raider-NodeAPI.git"
   },
-  "main": "server.js",
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Alex-231/Raider-NodeAPI/issues"
+  },
+  "homepage": "https://github.com/Alex-231/Raider-NodeAPI#readme",
   "dependencies": {
     "bcrypt-node": "^0.1.0",
     "bcrypt-nodejs": "0.0.3",
-    "body-parser": "^1.15.2",
-    "express": "^4.14.0",
-    "jsonwebtoken": "^7.2.1",
-    "mongoose": "^4.7.5",
+    "body-parser": "^1.18.3",
+    "crypto": "^1.0.1",
+    "date-fns": "^1.30.1",
+    "express": "^4.16.4",
+    "jsonwebtoken": "^8.5.0",
+    "mongoose": "^5.4.20",
+    "mongoose-type-email": "^1.0.10",
     "morgan": "^1.7.0",
-    "passport": "^0.3.2",
+    "node-uuid": "^1.4.8",
+    "passport": "^0.4.0",
     "passport-github": "^1.1.0",
-    "passport-google-oauth2": "^0.1.6",
-    "passport-jwt": "^2.2.1"
+    "passport-google-oauth2": "^0.2.0",
+    "passport-jwt": "^4.0.0",
+    "swagger-ui-express": "^4.0.2",
+    "sync-request": "^6.0.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.3.4",
+    "@babel/node": "^7.2.2",
+    "@babel/preset-env": "^7.3.4",
+    "babel-plugin-inline-dotenv": "^1.2.1",
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-node": "^8.0.1",
     "nodemon": "*"
   }
 }

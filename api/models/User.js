@@ -1,10 +1,11 @@
-var mongoose = require('mongoose');
-var bcrypt = require('bcrypt-nodejs');
-var CharacterSchema = require('./character');
-var SettingsSchema = require('./settings');
-var Clan = require('./clan');
+import { Schema, model as Model } from 'mongoose';
+import bcrypt from 'bcrypt-nodejs';
 
-var UserSchema = new mongoose.Schema({
+import { CharacterSchema } from './Character';
+import { SettingsSchema } from './Settings';
+import Clan from './Clan';
+
+export const UserSchema = new Schema({
     oauthID: {
         type: String,
         required: false,
@@ -36,24 +37,24 @@ var UserSchema = new mongoose.Schema({
         required: true
     },
     clan_id: {
-        type: mongoose.Schema.ObjectId,
+        type: Schema.ObjectId,
         auto: false,
         required: false
     },
     clanInvite_ids: {
-        type: [mongoose.Schema.ObjectId],
+        type: [Schema.ObjectId],
         required: false,
     },
     clanRequest_ids: {
-        type: [mongoose.Schema.ObjectId],
+        type: [Schema.ObjectId],
         required: false,
     },
     characters: {
-        type: [mongoose.model('Character').schema],
+        type: [CharacterSchema],
         required: false
     },
     userSettings: {
-        type: [mongoose.model('Settings').schema],
+        type: [SettingsSchema],
         required: false
     }
 });
@@ -136,4 +137,5 @@ UserSchema.methods.comparePassword = function(pw, cb) {
     });
 }
 
-module.exports = mongoose.model('User', UserSchema);
+const User = Model('User', UserSchema);
+export default User;
